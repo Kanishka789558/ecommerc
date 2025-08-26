@@ -1,9 +1,8 @@
 import Image from "next/image";
 import { supabase } from "@/app/libr/supabaseClient";
 import styles from "./productdetail.module.css";
-import { getImageSrc } from "@/utils/getImageSrc";
+import { getImageSrc } from "@/app/utils/getImageSrc";
 
-// ✅ apna khud ka PageProps type define karo
 type PageProps = {
   params: {
     id: string;
@@ -32,6 +31,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
   if (!product || error) return <div>Error loading product</div>;
 
+  // Main image and all images
   const initialMainImage = getImageSrc(
     product.products?.[0]?.image || product.images?.[0]
   );
@@ -60,10 +60,54 @@ export default async function ProductDetailPage({ params }: PageProps) {
       {/* Right Column */}
       <div className={styles.rightColumn}>
         <h2 className={styles.productTitle}>{product.title}</h2>
+
+        <div className={styles.ratingRow}>
+          <span className={styles.reviews}>({product.reviews_count} Reviews)</span>
+          <div className={styles.divider}></div>
+          <span className={styles.stock}>
+            {product.stock > 0 ? "In Stock" : "Out of Stock"}
+          </span>
+        </div>
+
         <div className={styles.price}>₹{product.price}</div>
         <p className={styles.description}>{product.description}</p>
+
+        <div className={styles.underline}></div>
+
+        {/* Colours */}
+        <div className={styles.colorRow}>
+          <span>Colours:</span>
+          {product.colours?.map((color: string, idx: number) => (
+            <div
+              key={idx}
+              style={{ backgroundColor: color }}
+              className={styles.colorCircle}
+            ></div>
+          ))}
+        </div>
+
+        {/* Sizes */}
+        <div className={styles.sizeRow}>
+          <span className={styles.sizeLabel}>Size:</span>
+          <div className={styles.sizeOptions}>
+            {product.sizes?.map((size: string, idx: number) => (
+              <div key={idx} className={styles.sizeBox}>
+                {size}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className={styles.actionRow}>
+          <div className={styles.qtyBox}>
+            <button>-</button>
+            <span>1</span>
+            <button>+</button>
+          </div>
+          <button className={styles.buyNow}>Buy Now</button>
+        </div>
       </div>
     </div>
   );
 }
-
