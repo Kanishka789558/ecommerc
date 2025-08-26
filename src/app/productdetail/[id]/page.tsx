@@ -1,4 +1,4 @@
-// "use client";
+
 
 // import { useEffect, useState } from "react";
 // import Image from "next/image";
@@ -129,12 +129,12 @@
 
 
 
-// "use client";
 
 // import { useEffect, useState } from "react";
 // import Image from "next/image";
 // import { supabase } from "@/app/libr/supabaseClient";
 // import styles from "./productdetail.module.css";
+// import { use } from "react";
 
 // interface Product {
 //   id: number;
@@ -149,18 +149,28 @@
 // }
 
 
-// export default function ProductDetailPage({ params }: { params: { id: string } }) {
-//   const productId = Number(params.id); // safer conversion
+// export default function ProductDetailPage() {
+// //   const productId = Number(params.id); // safer conversion
+// //   const [product, setProduct] = useState<Product | null>(null);
+   
+//    // ✅ unwrap with React.use()
+   
+//    const id = params?.id; //
 //   const [product, setProduct] = useState<Product | null>(null);
+  
+  
+
+
+
 
 //   useEffect(() => {
-//     if (!productId) return;
+//     if (!id) return;
 
 //     const fetchProduct = async () => {
 //       const { data, error } = await supabase
 //         .from("productdetail")
 //         .select("id, title, price, description, images, colours, sizes, stock, reviews_count,products ( id, name, price, image )")
-//         .eq("id", productId)
+//         .eq("id", id)
 //         .single();
 
 //       if (error) {
@@ -171,7 +181,7 @@
 //     };
 
 //     fetchProduct();
-//   }, [productId]);
+//     }, [id]);
 
 //   if (!product) return <div>Loading...</div>;
 
@@ -236,7 +246,7 @@
 
 
 
-// 
+
 // "use client";
 
 // import { useEffect, useState } from "react";
@@ -589,8 +599,10 @@
 // export default async function ProductDetailPage({ params }: { params: { id: string } }) {
 //   const productId = Number(params.id);
 
-//   const { data: product, error } = await supabase
-//     .from("productdetail")
+  
+//     const { data: product, error } = await supabase
+    
+//     .from<Product>("productdetail") 
 //     .select(`
 //       id, 
 //       title, 
@@ -605,7 +617,6 @@
 //     `)
 //     .eq("id", productId)
 //     .single();
-
 //   if (error || !product) {
 //     return <div>Error loading product</div>;
 //   }
@@ -656,7 +667,7 @@
 //         {/* Colours */}
 //         <div className={styles.colorRow}>
 //           <span>Colours:</span>
-//           {product.colours?.map((color, idx) => (
+//           {product.colours?.map((color:String , idx:number) => (
 //             <div
 //               key={idx}
 //               style={{ backgroundColor: color }}
@@ -669,7 +680,7 @@
 //         <div className={styles.sizeRow}>
 //           <span className={styles.sizeLabel}>Size:</span>
 //           <div className={styles.sizeOptions}>
-//             {product.sizes?.map((size, idx) => (
+//             {product.sizes?.map((size:String , idx:number) => (
 //               <div key={idx} className={styles.sizeBox}>
 //                 {size}
 //               </div>
@@ -690,3 +701,357 @@
 //     </div>
 //   );
 // }
+
+
+
+// import Image from "next/image";
+// import { supabase } from "@/app/libr/supabaseClient";
+// import styles from "./productdetail.module.css";
+
+// interface Product {
+//   id: number;
+//   title: string;
+//   price: number;
+//   description: string;
+//   images: string[];
+//   colours: string[];
+//   sizes: string[];
+//   stock: number;
+//   reviews_count: number;
+//   products?: { id: number; name: string; price: number; image: string }[];
+// }
+
+// interface ProductDetailPageProps {
+//   params: { id: string };
+// }
+
+// export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
+//   const productId = Number(params.id); // dynamic id from URL
+
+//   const { data: product, error } = await supabase
+//     .from("productdetail")
+//     .select(`
+//       id,
+//       title,
+//       price,
+//       description,
+//       images,
+//       colours,
+//       sizes,
+//       stock,
+//       reviews_count,
+//       products ( id, name, price, image )
+//     `)
+//     .eq("id", productId)
+//     .single();
+
+//   if (error || !product) {
+//     return <div>Error loading product</div>;
+//   }
+
+//   // choose initial main image
+//   const initialMainImage =
+//     product.products?.[0]?.image || product.images?.[0] || "";
+
+//   const allImages = [
+//     ...(product.products?.map((p) => p.image) || []),
+//     ...(product.images || []),
+//   ];
+
+//   return (
+//     <div className={styles.container}>
+//       {/* Left Thumbnails */}
+//       <div className={styles.leftColumn}>
+//         {allImages.map((img, idx) => (
+//           <div key={idx} className={styles.smallBox}>
+//             <Image src={img} alt={product.title} width={80} height={80} />
+//           </div>
+//         ))}
+//       </div>
+
+//       {/* Main Image */}
+//       <div className={styles.mainImage}>
+//         <Image src={initialMainImage} alt={product.title} width={400} height={400} />
+//       </div>
+
+//       {/* Right Column */}
+//       <div className={styles.rightColumn}>
+//         <h2 className={styles.productTitle}>{product.title}</h2>
+//         <div className={styles.ratingRow}>
+//           <span className={styles.reviews}>({product.reviews_count} Reviews)</span>
+//           <div className={styles.divider}></div>
+//           <span className={styles.stock}>
+//             {product.stock > 0 ? "In Stock" : "Out of Stock"}
+//           </span>
+//         </div>
+//         <div className={styles.price}>₹{product.price}</div>
+//         <p className={styles.description}>{product.description}</p>
+
+//         <div className={styles.underline}></div>
+
+//         {/* Colours */}
+//         <div className={styles.colorRow}>
+//           <span>Colours:</span>
+//           {product.colours?.map((color: string, idx: number) => (
+//             <div
+//               key={idx}
+//               style={{ backgroundColor: color }}
+//               className={styles.colorCircle}
+//             ></div>
+//           ))}
+//         </div>
+
+//         {/* Sizes */}
+//         <div className={styles.sizeRow}>
+//           <span className={styles.sizeLabel}>Size:</span>
+//           <div className={styles.sizeOptions}>
+//             {product.sizes?.map((size: string, idx: number) => (
+//               <div key={idx} className={styles.sizeBox}>
+//                 {size}
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* Actions */}
+//         <div className={styles.actionRow}>
+//           <div className={styles.qtyBox}>
+//             <button>-</button>
+//             <span>1</span>
+//             <button>+</button>
+//           </div>
+//           <button className={styles.buyNow}>Buy Now</button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+// No 'use client' here
+// import Image from "next/image";
+// import { supabase } from "@/app/libr/supabaseClient";
+// import styles from "./productdetail.module.css";
+
+// export default async function ProductDetailPage({ params }: { params: { id: string } }) {
+//   const productId = Number(params.id);
+//   const { data: product, error } = await supabase
+//     .from("productdetail")
+//     .select(`
+//       id,
+//       title,
+//       price,
+//       description,
+//       images,
+//       colours,
+//       sizes,
+//       stock,
+//       reviews_count,
+//       products ( id, name, price, image )
+//     `)
+//     .eq("id", productId)
+//     .single();
+
+//   if (!product || error) return <div>Error loading product</div>;
+
+//   // rest of your UI code
+
+//   if (error || !product) {
+//     return <div>Error loading product</div>;
+//   }
+
+//   // choose initial main image
+//   const initialMainImage =
+//     product.products?.[0]?.image || product.images?.[0] || "";
+
+//   const allImages = [
+//     ...(product.products?.map((p) => p.image) || []),
+//     ...(product.images || []),
+//   ];
+
+//   return (
+//     <div className={styles.container}>
+//       {/* Left Thumbnails */}
+//       <div className={styles.leftColumn}>
+//         {allImages.map((img, idx) => (
+//           <div key={idx} className={styles.smallBox}>
+//             <Image src={img} alt={product.title} width={80} height={80} />
+//           </div>
+//         ))}
+//       </div>
+
+//       {/* Main Image */}
+//       <div className={styles.mainImage}>
+//         <Image src={initialMainImage} alt={product.title} width={400} height={400} />
+//       </div>
+
+//       {/* Right Column */}
+//       <div className={styles.rightColumn}>
+//         <h2 className={styles.productTitle}>{product.title}</h2>
+//         <div className={styles.ratingRow}>
+//           <span className={styles.reviews}>({product.reviews_count} Reviews)</span>
+//           <div className={styles.divider}></div>
+//           <span className={styles.stock}>
+//             {product.stock > 0 ? "In Stock" : "Out of Stock"}
+//           </span>
+//         </div>
+//         <div className={styles.price}>₹{product.price}</div>
+//         <p className={styles.description}>{product.description}</p>
+
+//         <div className={styles.underline}></div>
+
+//         {/* Colours */}
+//         <div className={styles.colorRow}>
+//           <span>Colours:</span>
+//           {product.colours?.map((color: string, idx: number) => (
+//             <div
+//               key={idx}
+//               style={{ backgroundColor: color }}
+//               className={styles.colorCircle}
+//             ></div>
+//           ))}
+//         </div>
+
+//         {/* Sizes */}
+//         <div className={styles.sizeRow}>
+//           <span className={styles.sizeLabel}>Size:</span>
+//           <div className={styles.sizeOptions}>
+//             {product.sizes?.map((size: string, idx: number) => (
+//               <div key={idx} className={styles.sizeBox}>
+//                 {size}
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* Actions */}
+//         <div className={styles.actionRow}>
+//           <div className={styles.qtyBox}>
+//             <button>-</button>
+//             <span>1</span>
+//             <button>+</button>
+//           </div>
+//           <button className={styles.buyNow}>Buy Now</button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+import Image from "next/image"; 
+import { supabase } from "@/app/libr/supabaseClient";
+import styles from "./productdetail.module.css";
+
+// helper function
+export const getImageSrc = (image?: string): string => {
+  if (!image) return "/placeholder.png"; // fallback image
+  return `/${image}`;
+};
+
+export default async function ProductDetailPage({ params }: { params: { id: string } }) {
+  const productId = Number(params.id);
+  const { data: product, error } = await supabase
+    .from("productdetail")
+    .select(`
+      id,
+      title,
+      price,
+      description,
+      images,
+      colours,
+      sizes,
+      stock,
+      reviews_count,
+      products ( id, name, price, image )
+    `)
+    .eq("id", productId)
+    .single();
+
+  if (!product || error) return <div>Error loading product</div>;
+
+  // choose initial main image
+  const initialMainImage = getImageSrc(
+    product.products?.[0]?.image || product.images?.[0]
+  );
+
+  const allImages = [
+    ...(product.products?.map((p) => getImageSrc(p.image)) || []),
+    ...(product.images?.map((img: string) => getImageSrc(img)) || []),
+  ];
+
+  return (
+    <div className={styles.container}>
+      {/* Left Thumbnails */}
+      <div className={styles.leftColumn}>
+        {allImages.map((img, idx) => (
+          <div key={idx} className={styles.smallBox}>
+            <Image src={img} alt={product.title} width={80} height={80} />
+          </div>
+        ))}
+      </div>
+
+      {/* Main Image */}
+      <div className={styles.mainImage}>
+        <Image src={initialMainImage} alt={product.title} width={400} height={400} />
+      </div>
+
+      {/* Right Column */}
+      <div className={styles.rightColumn}>
+        <h2 className={styles.productTitle}>{product.title}</h2>
+        <div className={styles.ratingRow}>
+          <span className={styles.reviews}>({product.reviews_count} Reviews)</span>
+          <div className={styles.divider}></div>
+          <span className={styles.stock}>
+            {product.stock > 0 ? "In Stock" : "Out of Stock"}
+          </span>
+        </div>
+        <div className={styles.price}>₹{product.price}</div>
+        <p className={styles.description}>{product.description}</p>
+
+        <div className={styles.underline}></div>
+
+        {/* Colours */}
+        <div className={styles.colorRow}>
+          <span>Colours:</span>
+          {product.colours?.map((color: string, idx: number) => (
+            <div
+              key={idx}
+              style={{ backgroundColor: color }}
+              className={styles.colorCircle}
+            ></div>
+          ))}
+        </div>
+
+        {/* Sizes */}
+        <div className={styles.sizeRow}>
+          <span className={styles.sizeLabel}>Size:</span>
+          <div className={styles.sizeOptions}>
+            {product.sizes?.map((size: string, idx: number) => (
+              <div key={idx} className={styles.sizeBox}>
+                {size}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className={styles.actionRow}>
+          <div className={styles.qtyBox}>
+            <button>-</button>
+            <span>1</span>
+            <button>+</button>
+          </div>
+          <button className={styles.buyNow}>Buy Now</button>
+        </div>
+      </div>
+    </div>
+  );
+}
