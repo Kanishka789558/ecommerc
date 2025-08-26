@@ -1,14 +1,3 @@
-import Image from "next/image";
-import { supabase } from "@/app/libr/supabaseClient";
-import styles from "./productdetail.module.css";
-import { getImageSrc } from "@/app/utils/getImageSrc";
-
-type PageProps = {
-  params: {
-    id: string;
-  };
-};
-
 export default async function ProductDetailPage({ params }: PageProps) {
   const productId = Number(params.id);
 
@@ -111,3 +100,6 @@ export default async function ProductDetailPage({ params }: PageProps) {
     </div>
   );
 }
+
+        
+           
